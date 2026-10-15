@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="uk" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Оренда квартир</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+<header class="topbar">
+    <div class="container topbar-inner">
+        <a class="brand" th:href="@{/apartments}">Оренда квартир</a>
+        <nav>
+            <a class="active" th:href="@{/apartments}">Пошук</a>
+            <a th:href="@{/owner/apartments}">Кабінет хазяїна</a>
+        </nav>
+    </div>
+</header>
+
+<main class="container">
+    <h1>Знайдіть свою квартиру</h1>
+
+    <form class="panel" th:action="@{/apartments}" th:object="${criteria}" method="get">
+        <div class="form-grid">
+            <div class="field">
+                <label for="city">Місто</label>
+                <input type="text" id="city" th:field="*{city}" placeholder="Наприклад, Київ">
+            </div>
+            <div class="field">
+                <label for="rooms">Кімнат</label>
+                <input type="number" id="rooms" th:field="*{rooms}" min="1" max="10" step="1" placeholder="Будь-яка">
+            </div>
+            <div class="field">
+                <label for="maxPrice">Максимальна ціна</label>
+                <div class="input-wrap">
+                    <input type="number" id="maxPrice" th:field="*{maxPrice}" min="0" step="any" placeholder="20000">
+                    <span class="unit">грн</span>
+                </div>
+            </div>
+            <div class="field">
+                <label for="minArea">Мінімальна площа</label>
+                <div class="input-wrap">
+                    <input type="number" id="minArea" th:field="*{minArea}" min="1" step="any" placeholder="40">
+                    <span class="unit">м²</span>
+                </div>
+            </div>
+            <div class="field">
+                <button class="btn" type="submit" style="width:100%">Шукати</button>
+            </div>
+        </div>
+    </form>
+	<div class="actions" style="margin-bottom:20px">
+	    <a class="btn btn-secondary btn-small" th:each="n : ${#numbers.sequence(1, 3)}"
+	       th:href="@{/apartments(rooms=${n})}" th:text="${n} + ' кімн.'">1 кімн.</a>
+	</div>
+
+    <p class="results-info" th:unless="${#lists.isEmpty(apartments)}"
+       th:text="'Знайдено: ' + ${#lists.size(apartments)}"></p>
+
+    <div class="cards">
+        <article class="card" th:each="a : ${apartments}">
+            <h3 th:text="${a.title}">Назва</h3>
+            <div class="price" th:text="${@priceFormatter.format(a.price)}">12000 грн/міс</div>
+            <div class="tags">
+                <span class="tag" th:text="${a.city}">Київ</span>
+                <span class="tag" th:text="${a.rooms} + ' кімн.'">2 кімн.</span>
+                <span class="tag" th:text="${a.area} + ' м²'">50 м²</span>
+				<span class="tag" th:switch="${a.rooms}">
+				    <th:block th:case="1">Компактна</th:block>
+				    <th:block th:case="2">Для пари</th:block>
+				    <th:block th:case="3">Для родини</th:block>
+				    <th:block th:case="*">Великий простір</th:block>
+				</span>
+            </div>
+			<p class="desc" th:text="${#strings.isEmpty(a.description) ? null : a.description} ?: 'Опис відсутній'">Опис</p>
+        </article>
+    </div>
+
+    <div class="empty" th:if="${#lists.isEmpty(apartments)}">
+        Нічого не знайдено. Спробуйте змінити параметри пошуку.
+    </div>
+</main>
+</body>
+</html>
