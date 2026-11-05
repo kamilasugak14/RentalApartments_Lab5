@@ -57,6 +57,18 @@
             <version>3.0.2</version>
         </dependency>
 
+        <!-- ЛР5: Spring JDBC (JdbcTemplate, JdbcClient, транзакції, пул з'єднань) -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-jdbc</artifactId>
+        </dependency>
+        <!-- ЛР5: драйвер PostgreSQL -->
+        <dependency>
+            <groupId>org.postgresql</groupId>
+            <artifactId>postgresql</artifactId>
+            <scope>runtime</scope>
+        </dependency>
+
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-devtools</artifactId>

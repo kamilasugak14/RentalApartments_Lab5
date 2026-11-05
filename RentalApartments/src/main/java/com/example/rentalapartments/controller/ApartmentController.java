@@ -65,6 +65,7 @@ public class ApartmentController {
         return "redirect:/owner/apartments";
     }
 
+    @io.swagger.v3.oas.annotations.Hidden
     @GetMapping("/demo/scopes")
     @ResponseBody
     public String scopes() {

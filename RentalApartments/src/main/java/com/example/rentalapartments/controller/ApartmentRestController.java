@@ -134,6 +134,14 @@ public class ApartmentRestController {
             @ApiResponse(responseCode = "404", description = "Квартиру з таким id не знайдено",
                     content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
     })
+    @io.swagger.v3.oas.annotations.parameters.RequestBody(
+            description = "JSON Merge Patch: об’єкт лише з тими полями квартири, які потрібно змінити. "
+                    + "Поля, яких немає в тілі запиту, залишаються без змін.",
+            required = true,
+            content = @Content(mediaType = "application/merge-patch+json",
+                    schema = @Schema(implementation = ApartmentDto.class),
+                    examples = @io.swagger.v3.oas.annotations.media.ExampleObject(
+                            value = "{\"price\": 17500, \"description\": \"Новий опис\"}")))
     @PatchMapping(value = "/{id}", consumes = "application/merge-patch+json")
     public ResponseEntity<ApartmentDto> patch(
             @Parameter(description = "Ідентифікатор квартири", example = "1") @PathVariable Long id,
@@ -165,11 +173,14 @@ public class ApartmentRestController {
         return ResponseEntity.ok(ApartmentMapper.toDto(saved));
     }
 
-    @Operation(summary = "Видалити квартиру", description = "Видаляє квартиру за ідентифікатором.")
+    @Operation(summary = "Видалити квартиру", description = "Видаляє квартиру за ідентифікатором. Квартиру, для якої існують бронювання, видалити не можна.")
     @ApiResponses({
             @ApiResponse(responseCode = "204", description = "Квартиру успішно видалено"),
             @ApiResponse(responseCode = "404", description = "Квартиру з таким id не знайдено",
-                    content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
+                    content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
+            @ApiResponse(responseCode = "409", description = "Квартиру не можна видалити: для неї існують бронювання",
+            content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
+            
     })
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(
